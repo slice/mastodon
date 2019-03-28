@@ -24,20 +24,16 @@ module Mastodon
       ''
     end
 
-    def suffix
-      '+slice'
-    end
-
     def to_a
       [major, minor, patch, pre].compact
     end
 
     def to_s
-      [to_a.join('.'), flags, suffix].join
+      [to_a.join('.'), flags].join
     end
 
     def repository
-      'slice/slicedon'
+      'tootsuite/mastodon'
     end
 
     def source_base_url
