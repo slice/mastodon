@@ -169,9 +169,9 @@ class GettingStarted extends ImmutablePureComponent {
 
             <p>
               <FormattedMessage
-                id='getting_started.open_source_notice'
-                defaultMessage='Mastodon is open source software. You can contribute or report issues on GitHub at {github}.'
-                values={{ github: <span><a href='https://github.com/tootsuite/mastodon' rel='noopener' target='_blank'>tootsuite/mastodon</a> (v{version})</span> }}
+                id='getting_started.forked_notice'
+                defaultMessage='slicedon is a fork of Mastodon, which is open source software. Source code is available at {github}.'
+                values={{ github: <span><a href='https://github.com/slice/slicedon' rel='noopener' target='_blank'>slice/slicedon</a> (v{version})</span> }}
               />
             </p>
           </div>
