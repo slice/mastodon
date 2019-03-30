@@ -24,12 +24,16 @@ module Mastodon
       'rc1'
     end
 
+    def flavor
+      nil
+    end
+
     def to_a
       [major, minor, patch, pre].compact
     end
 
     def to_s
-      [to_a.join('.'), flags].join
+      [to_a.join('.'), flags, flavor].join
     end
 
     def repository

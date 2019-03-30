@@ -4,7 +4,7 @@ module Mastodon
   module Version
     module_function
 
-    def flags
+    def flavor
       '+slice'
     end
 
