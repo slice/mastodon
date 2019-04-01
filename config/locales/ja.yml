@@ -761,10 +761,11 @@ ja:
     truncate: "&hellip;"
   polls:
     errors:
+      already_voted: このアンケートには投票済みです
       duplicate_options: に同じものがあります
       duration_too_long: が長過ぎます
       duration_too_short: が短過ぎます
-      expired: 既に終了している投票です
+      expired: アンケートは既に終了しました
       over_character_limit: は%{max}文字より長くすることはできません
       too_few_options: は複数必要です
       too_many_options: は%{max}個までです
@@ -860,6 +861,7 @@ ja:
     edit_profile: プロフィールを編集
     export: データのエクスポート
     featured_tags: 注目のハッシュタグ
+    identity_proofs: Identity proofs
     import: データのインポート
     migrate: アカウントの引っ越し
     notifications: 通知
@@ -889,12 +891,12 @@ ja:
       limit: 固定できるトゥート数の上限に達しました
       ownership: 他人のトゥートを固定することはできません
       private: 非公開のトゥートを固定することはできません
-      reblog: ブーストされたトゥートを固定することはできません
+      reblog: ブーストを固定することはできません
     poll:
       total_votes:
-        one: "%{count} vote"
-        other: "%{count} votes"
-      vote: Vote
+        one: "%{count}票"
+        other: "%{count}票"
+      vote: 投票
     show_more: もっと見る
     sign_in_to_participate: ログインして会話に参加
     title: '%{name}: "%{quote}"'
