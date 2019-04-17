@@ -582,6 +582,10 @@
     .compose-form__publish-button-wrapper {
       overflow: hidden;
       padding-top: 10px;
+
+      button {
+        text-transform: none;
+      }
     }
   }
 }
