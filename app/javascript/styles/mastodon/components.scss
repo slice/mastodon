@@ -708,6 +708,11 @@
   &:not(.rich-text) {
     del {
       text-decoration: none;
+
+      &::before,
+      &::after {
+        content: '~~';
+      }
     }
 
     code {
@@ -716,6 +721,11 @@
 
     u {
       text-decoration: none;
+
+      &::before,
+      &::after {
+        content: '__';
+      }
     }
 
     h1::before {
@@ -736,6 +746,22 @@
 
     h5::before {
       content: '##### ';
+    }
+
+    b,
+    strong {
+      &::before,
+      &::after {
+        content: '**';
+      }
+    }
+
+    em,
+    i {
+      &::before,
+      &::after {
+        content: '*';
+      }
     }
   }
 
