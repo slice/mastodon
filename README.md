@@ -8,5 +8,6 @@ slicedon is a fork of [Mastodon] with minimal changes.
 
 * 5,000 character toots
 * Custom gray theme with pink accents
+* Accepts rich text
 
 ![A screenshot of the custom theme](https://i.imgur.com/lWhRQUf.png)
