@@ -3,13 +3,19 @@
 class REST::StatusSerializer < ActiveModel::Serializer
   attributes :id, :created_at, :in_reply_to_id, :in_reply_to_account_id,
              :sensitive, :spoiler_text, :visibility, :language,
-             :uri, :content, :url, :replies_count, :reblogs_count,
+             :uri, :url, :replies_count, :reblogs_count,
              :favourites_count
 
   attribute :favourited, if: :current_user?
   attribute :reblogged, if: :current_user?
   attribute :muted, if: :current_user?
+  attribute :bookmarked, if: :current_user?
   attribute :pinned, if: :pinnable?
+  attribute :local_only if :local?
+
+  attribute :content, unless: :source_requested?
+  attribute :text, if: :source_requested?
+  attribute :content_type, if: :source_requested?
 
   belongs_to :reblog, serializer: REST::StatusSerializer
   belongs_to :application, if: :show_application?
@@ -90,6 +96,14 @@ class REST::StatusSerializer < ActiveModel::Serializer
     end
   end
 
+  def bookmarked
+    if instance_options && instance_options[:bookmarks]
+      instance_options[:bookmarks].bookmarks_map[object.id] || false
+    else
+      current_user.account.bookmarked?(object)
+    end
+  end
+
   def pinned
     if instance_options && instance_options[:relationships]
       instance_options[:relationships].pins_map[object.id] || false
@@ -103,6 +117,10 @@ class REST::StatusSerializer < ActiveModel::Serializer
       current_user.account_id == object.account_id &&
       !object.reblog? &&
       %w(public unlisted).include?(object.visibility)
+  end
+
+  def source_requested?
+    instance_options[:source_requested]
   end
 
   def ordered_mentions

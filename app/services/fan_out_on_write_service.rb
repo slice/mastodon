@@ -6,23 +6,27 @@ class FanOutOnWriteService < BaseService
   def call(status)
     raise Mastodon::RaceConditionError if status.visibility.nil?
 
+    deliver_to_self(status) if status.account.local?
+
     render_anonymous_payload(status)
 
     if status.direct_visibility?
+      deliver_to_mentioned_followers(status)
+      deliver_to_direct_timelines(status)
       deliver_to_own_conversation(status)
     elsif status.limited_visibility?
       deliver_to_mentioned_followers(status)
     else
-      deliver_to_self(status) if status.account.local?
       deliver_to_followers(status)
       deliver_to_lists(status)
     end
 
-    return if status.account.silenced? || !status.public_visibility? || status.reblog?
+    return if status.account.silenced? || !status.public_visibility?
+    return if status.reblog? && !Setting.show_reblogs_in_public_timelines
 
     deliver_to_hashtags(status)
 
-    return if status.reply? && status.in_reply_to_account_id != status.account_id
+    return if status.reply? && status.in_reply_to_account_id != status.account_id && !Setting.show_replies_in_public_timelines
 
     deliver_to_public(status)
     deliver_to_media(status) if status.media_attachments.any?
@@ -89,6 +93,16 @@ class FanOutOnWriteService < BaseService
 
     Redis.current.publish('timeline:public:media', @payload)
     Redis.current.publish('timeline:public:local:media', @payload) if status.local?
+  end
+
+  def deliver_to_direct_timelines(status)
+    Rails.logger.debug "Delivering status #{status.id} to direct timelines"
+
+    status.mentions.includes(:account).each do |mention|
+      Redis.current.publish("timeline:direct:#{mention.account.id}", @payload) if mention.account.local?
+    end
+
+    Redis.current.publish("timeline:direct:#{status.account.id}", @payload) if status.account.local?
   end
 
   def deliver_to_own_conversation(status)

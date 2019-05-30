@@ -13,7 +13,7 @@ module Mastodon
     end
 
     def patch
-      1
+      4
     end
 
     def pre
@@ -24,20 +24,20 @@ module Mastodon
       ''
     end
 
-    def flavor
-      nil
-    end
-
     def to_a
       [major, minor, patch, pre].compact
     end
 
+    def suffix
+      '+glitch'
+    end
+
     def to_s
-      [to_a.join('.'), flags, flavor].join
+      [to_a.join('.'), flags, suffix].join
     end
 
     def repository
-      ENV.fetch('GITHUB_REPOSITORY') { 'tootsuite/mastodon' }
+      ENV.fetch('GITHUB_REPOSITORY') { 'glitch-soc/mastodon' }
     end
 
     def source_base_url
@@ -46,7 +46,7 @@ module Mastodon
 
     # specify git tag or commit hash here
     def source_tag
-      nil
+      ENV.fetch('SOURCE_TAG') { nil }
     end
 
     def source_url

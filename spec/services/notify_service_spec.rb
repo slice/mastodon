@@ -39,15 +39,15 @@ RSpec.describe NotifyService, type: :service do
   end
 
   it 'does not notify when sender is silenced and not followed' do
-    sender.update(silenced: true)
+    sender.silence!
     is_expected.to_not change(Notification, :count)
   end
 
   it 'does not notify when recipient is suspended' do
-    recipient.update(suspended: true)
+    recipient.suspend!
     is_expected.to_not change(Notification, :count)
   end
-
+  
   context 'for direct messages' do
     let(:activity) { Fabricate(:mention, account: recipient, status: Fabricate(:status, account: sender, visibility: :direct)) }
 

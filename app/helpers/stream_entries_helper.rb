@@ -16,22 +16,26 @@ module StreamEntriesHelper
     if user_signed_in?
       if account.id == current_user.account_id
         link_to settings_profile_url, class: 'button logo-button' do
-          safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('settings.edit_profile')])
+          safe_join([svg_logo, t('settings.edit_profile')])
         end
       elsif current_account.following?(account) || current_account.requested?(account)
         link_to account_unfollow_path(account), class: 'button logo-button button--destructive', data: { method: :post } do
-          safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('accounts.unfollow')])
+          safe_join([svg_logo, t('accounts.unfollow')])
         end
       elsif !(account.memorial? || account.moved?)
         link_to account_follow_path(account), class: "button logo-button#{account.blocking?(current_account) ? ' disabled' : ''}", data: { method: :post } do
-          safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('accounts.follow')])
+          safe_join([svg_logo, t('accounts.follow')])
         end
       end
     elsif !(account.memorial? || account.moved?)
       link_to account_remote_follow_path(account), class: 'button logo-button modal-button', target: '_new' do
-        safe_join([render(file: Rails.root.join('app', 'javascript', 'images', 'logo.svg')), t('accounts.follow')])
+        safe_join([svg_logo, t('accounts.follow')])
       end
     end
+  end
+
+  def svg_logo
+    content_tag(:svg, tag(:use, 'xlink:href' => '#mastodon-svg-logo'), 'viewBox' => '0 0 216.4144 232.00976')
   end
 
   def account_badge(account, all: false)
@@ -60,8 +64,12 @@ module StreamEntriesHelper
     end
   end
 
+  def hide_followers_count?(account)
+    Setting.hide_followers_count || account.user&.setting_hide_followers_count
+  end
+
   def account_description(account)
-    prepend_str = [
+    prepend_stats = [
       [
         number_to_human(account.statuses_count, strip_insignificant_zeros: true),
         I18n.t('accounts.posts', count: account.statuses_count),
@@ -71,14 +79,16 @@ module StreamEntriesHelper
         number_to_human(account.following_count, strip_insignificant_zeros: true),
         I18n.t('accounts.following', count: account.following_count),
       ].join(' '),
+    ]
 
-      [
+    unless hide_followers_count?(account)
+      prepend_stats << [
         number_to_human(account.followers_count, strip_insignificant_zeros: true),
         I18n.t('accounts.followers', count: account.followers_count),
-      ].join(' '),
-    ].join(', ')
+      ].join(' ')
+    end
 
-    [prepend_str, account.note].join(' · ')
+    [prepend_stats.join(', '), account.note].join(' · ')
   end
 
   def media_summary(status)

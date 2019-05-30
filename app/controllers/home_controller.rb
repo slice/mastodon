@@ -2,6 +2,8 @@
 
 class HomeController < ApplicationController
   before_action :authenticate_user!
+
+  before_action :set_pack
   before_action :set_referrer_policy_header
   before_action :set_initial_state_json
 
@@ -39,6 +41,10 @@ class HomeController < ApplicationController
     redirect_to(matches ? tag_path(CGI.unescape(matches[:tag])) : default_redirect_path)
   end
 
+  def set_pack
+    use_pack 'home'
+  end
+
   def set_initial_state_json
     serializable_resource = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(initial_state_params), serializer: InitialStateSerializer)
     @initial_state_json   = serializable_resource.to_json
@@ -58,7 +64,7 @@ class HomeController < ApplicationController
     if request.path.start_with?('/web')
       new_user_session_path
     elsif single_user_mode?
-      short_account_path(Account.local.where(suspended: false).first)
+      short_account_path(Account.local.without_suspended.first)
     else
       about_path
     end

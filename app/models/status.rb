@@ -21,7 +21,10 @@
 #  account_id             :bigint(8)        not null
 #  application_id         :bigint(8)
 #  in_reply_to_account_id :bigint(8)
+#  local_only             :boolean
+#  full_status_text       :text             default(""), not null
 #  poll_id                :bigint(8)
+#  content_type           :string
 #
 
 class Status < ApplicationRecord
@@ -51,6 +54,7 @@ class Status < ApplicationRecord
   belongs_to :reblog, foreign_key: 'reblog_of_id', class_name: 'Status', inverse_of: :reblogs, optional: true
 
   has_many :favourites, inverse_of: :status, dependent: :destroy
+  has_many :bookmarks, inverse_of: :status, dependent: :destroy
   has_many :reblogs, foreign_key: 'reblog_of_id', class_name: 'Status', inverse_of: :reblog, dependent: :destroy
   has_many :replies, foreign_key: 'in_reply_to_id', class_name: 'Status', inverse_of: :thread
   has_many :mentions, dependent: :destroy, inverse_of: :status
@@ -71,6 +75,7 @@ class Status < ApplicationRecord
   validates_with DisallowedHashtagsValidator
   validates :reblog, uniqueness: { scope: :account }, if: :reblog?
   validates :visibility, exclusion: { in: %w(direct limited) }, if: :reblog?
+  validates :content_type, inclusion: { in: %w(text/plain text/markdown text/html) }, allow_nil: true
 
   accepts_nested_attributes_for :poll
 
@@ -84,8 +89,8 @@ class Status < ApplicationRecord
   scope :without_reblogs, -> { where('statuses.reblog_of_id IS NULL') }
   scope :with_public_visibility, -> { where(visibility: :public) }
   scope :tagged_with, ->(tag) { joins(:statuses_tags).where(statuses_tags: { tag_id: tag }) }
-  scope :excluding_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced: false }) }
-  scope :including_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced: true }) }
+  scope :excluding_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced_at: nil }) }
+  scope :including_silenced_accounts, -> { left_outer_joins(:account).where.not(accounts: { silenced_at: nil }) }
   scope :not_excluded_by_account, ->(account) { where.not(account_id: account.excluded_from_timeline_account_ids) }
   scope :not_domain_blocked_by_account, ->(account) { account.excluded_from_timeline_domains.blank? ? left_outer_joins(:account) : left_outer_joins(:account).where('accounts.domain IS NULL OR accounts.domain NOT IN (?)', account.excluded_from_timeline_domains) }
   scope :tagged_with_all, ->(tags) {
@@ -99,6 +104,8 @@ class Status < ApplicationRecord
             .where("t#{id}.tag_id IS NULL")
     end
   }
+
+  scope :not_local_only, -> { where(local_only: [false, nil]) }
 
   cache_associated :application,
                    :media_attachments,
@@ -257,6 +264,8 @@ class Status < ApplicationRecord
 
   around_create Mastodon::Snowflake::Callbacks
 
+  before_create :set_locality
+
   before_validation :prepare_contents, if: :local?
   before_validation :set_reblog
   before_validation :set_visibility
@@ -320,7 +329,8 @@ class Status < ApplicationRecord
     end
 
     def as_public_timeline(account = nil, local_only = false)
-      query = timeline_scope(local_only).without_replies
+      query = timeline_scope(local_only)
+      query = query.without_replies unless Setting.show_replies_in_public_timelines
 
       apply_timeline_filters(query, account, local_only)
     end
@@ -337,6 +347,10 @@ class Status < ApplicationRecord
 
     def favourites_map(status_ids, account_id)
       Favourite.select('status_id').where(status_id: status_ids).where(account_id: account_id).each_with_object({}) { |f, h| h[f.status_id] = true }
+    end
+
+    def bookmarks_map(status_ids, account_id)
+      Bookmark.select('status_id').where(status_id: status_ids).where(account_id: account_id).map { |f| [f.status_id, true] }.to_h
     end
 
     def reblogs_map(status_ids, account_id)
@@ -375,7 +389,7 @@ class Status < ApplicationRecord
       visibility = [:public, :unlisted]
 
       if account.nil?
-        where(visibility: visibility)
+        where(visibility: visibility).not_local_only
       elsif target_account.blocking?(account) # get rid of blocked peeps
         none
       elsif account.id == target_account.id # author can see own stuff
@@ -397,9 +411,12 @@ class Status < ApplicationRecord
 
     def timeline_scope(local_only = false)
       starting_scope = local_only ? Status.local : Status
-      starting_scope
-        .with_public_visibility
-        .without_reblogs
+      starting_scope = starting_scope.with_public_visibility
+      if Setting.show_reblogs_in_public_timelines
+        starting_scope
+      else
+        starting_scope.without_reblogs
+      end
     end
 
     def apply_timeline_filters(query, account, local_only)
@@ -418,7 +435,7 @@ class Status < ApplicationRecord
     end
 
     def filter_timeline_default(query)
-      query.excluding_silenced_accounts
+      query.not_local_only.excluding_silenced_accounts
     end
 
     def account_silencing_filter(account)
@@ -429,6 +446,15 @@ class Status < ApplicationRecord
         excluding_silenced_accounts
       end
     end
+  end
+
+  def marked_local_only?
+    # match both with and without U+FE0F (the emoji variation selector)
+    /#{local_only_emoji}\ufe0f?\z/.match?(content)
+  end
+
+  def local_only_emoji
+    '👁'
   end
 
   private
@@ -461,6 +487,12 @@ class Status < ApplicationRecord
     self.visibility = reblog.visibility if reblog? && visibility.nil?
     self.visibility = (account.locked? ? :private : :public) if visibility.nil?
     self.sensitive  = false if sensitive.nil?
+  end
+
+  def set_locality
+    if account.domain.nil? && !attribute_changed?(:local_only)
+      self.local_only = marked_local_only?
+    end
   end
 
   def set_conversation

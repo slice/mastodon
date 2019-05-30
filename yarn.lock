@@ -782,6 +782,11 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@clusterws/cws@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@clusterws/cws/-/cws-0.14.0.tgz#242824b6884454001340222a836db6f6c5e62bfb"
+  integrity sha512-knZj3KZNHIAGsX7TUc/0Q5gcx2bKMMcTPsAOZomLKdK5a4o/umKFlttWRH84Yr1nVlQy+UMO23qfDR8gRZ/4cw==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -1525,6 +1530,10 @@ atob@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
+
+atrament@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/atrament/-/atrament-0.2.3.tgz#6ccbc0daa6d3f25e5aeaeb31befeb78e86980348"
 
 autoprefixer@^9.4.10:
   version "9.4.10"
@@ -3724,6 +3733,10 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
+
+favico.js@^0.3.10:
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/favico.js/-/favico.js-0.3.10.tgz#80586e27a117f24a8d51c18a99bdc714d4339301"
 
 faye-websocket@^0.10.0:
   version "0.10.0"
@@ -9268,11 +9281,6 @@ uuid@^3.0.1, uuid@^3.1.0, uuid@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
-
-uws@10.148.0:
-  version "10.148.0"
-  resolved "https://registry.yarnpkg.com/uws/-/uws-10.148.0.tgz#3fcd35f083ca515e091cd33b2d78f0f51a666215"
-  integrity sha512-aJpFgMMyxubiE/ll4nj9nWoQbv0HzZZDWXfwyu78nuFObX0Zoyv3TWjkqKPQ1vb2sMPZoz67tri7QNE6dybNmQ==
 
 v8-compile-cache@^2.0.2:
   version "2.0.2"

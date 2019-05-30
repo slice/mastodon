@@ -47,9 +47,12 @@ class PostStatusService < BaseService
   private
 
   def preprocess_attributes!
-    @text         = @options.delete(:spoiler_text) if @text.blank? && @options[:spoiler_text].present?
+    if @text.blank? && @options[:spoiler_text].present?
+     @text = '.'
+     @text = @media.find(&:video?) ? '📹' : '🖼' if @media.size > 0
+    end
     @visibility   = @options[:visibility] || @account.user&.setting_default_privacy
-    @visibility   = :unlisted if @visibility == :public && @account.silenced
+    @visibility   = :unlisted if @visibility == :public && @account.silenced?
     @scheduled_at = @options[:scheduled_at]&.to_datetime
     @scheduled_at = nil if scheduled_in_the_past?
   rescue ArgumentError
@@ -88,8 +91,12 @@ class PostStatusService < BaseService
   def postprocess_status!
     LinkCrawlWorker.perform_async(@status.id) unless @status.spoiler_text?
     DistributionWorker.perform_async(@status.id)
-    Pubsubhubbub::DistributionWorker.perform_async(@status.stream_entry.id)
-    ActivityPub::DistributionWorker.perform_async(@status.id)
+
+    unless @status.local_only?
+      Pubsubhubbub::DistributionWorker.perform_async(@status.stream_entry.id)
+      ActivityPub::DistributionWorker.perform_async(@status.id)
+    end
+
     PollExpirationNotifyWorker.perform_at(@status.poll.expires_at, @status.poll.id) if @status.poll
   end
 
@@ -161,6 +168,7 @@ class PostStatusService < BaseService
       visibility: @visibility,
       language: language_from_option(@options[:language]) || @account.user&.setting_default_language&.presence || LanguageDetector.instance.detect(@text, @account),
       application: @options[:application],
+      content_type: @options[:content_type] || @account.user&.setting_default_content_type,
     }.compact
   end
 

@@ -2,7 +2,7 @@
   "name": "mastodon",
   "license": "AGPL-3.0-or-later",
   "engines": {
-    "node": ">=8 <11"
+    "node": ">=8.12 <12"
   },
   "scripts": {
     "postversion": "git push --tags",
@@ -34,7 +34,8 @@
       "<rootDir>/config/",
       "<rootDir>/log/",
       "<rootDir>/public/",
-      "<rootDir>/tmp/"
+      "<rootDir>/tmp/",
+      "<rootDir>/app/javascript/themes/"
     ],
     "setupFiles": [
       "raf/polyfill"
@@ -69,7 +70,9 @@
     "@babel/preset-env": "^7.3.4",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.3.4",
+    "@clusterws/cws": "^0.14.0",
     "array-includes": "^3.0.3",
+    "atrament": "^0.2.3",
     "autoprefixer": "^9.4.10",
     "axios": "^0.18.0",
     "babel-loader": "^8.0.5",
@@ -91,6 +94,7 @@
     "escape-html": "^1.0.3",
     "exif-js": "^2.3.0",
     "express": "^4.16.4",
+    "favico.js": "^0.3.10",
     "fibers": "^3.1.1",
     "file-loader": "^3.0.1",
     "font-awesome": "^4.7.0",
@@ -157,7 +161,6 @@
     "tiny-queue": "^0.2.1",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "uuid": "^3.1.0",
-    "uws": "10.148.0",
     "webpack": "^4.29.6",
     "webpack-assets-manifest": "^3.1.1",
     "webpack-bundle-analyzer": "^3.1.0",
