@@ -21,9 +21,8 @@
 #  account_id             :bigint(8)        not null
 #  application_id         :bigint(8)
 #  in_reply_to_account_id :bigint(8)
-#  local_only             :boolean
-#  full_status_text       :text             default(""), not null
 #  poll_id                :bigint(8)
+#  local_only             :boolean
 #  content_type           :string
 #
 
