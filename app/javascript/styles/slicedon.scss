@@ -2,5 +2,3 @@ $ui-base-color: hsl(0, 0%, 10%);
 $ui-highlight-color: hsl(330, 50%, 50%);
 $ui-primary-color: lighten($ui-base-color, 40%);
 $ui-secondary-color: lighten($ui-base-color, 60%);
-
-@import 'application';
