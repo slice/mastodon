@@ -1,10 +1,12 @@
-# slicedon (glitch edition)
+# slicedon
 
-slicedon is [glitch-soc] with some minor tweaks.
+slicedon is a fork of [glitch-soc] and by extension, [Mastodon].
 
+[mastodon]: https://github.com/tootsuite/mastodon
 [glitch-soc]: https://github.com/glitch-soc/mastodon
 
 ## Changes
 
-* 5,000 character toots
-* Custom gray theme with pink accents
+* A slicedon skin, featuring gray colors with pink accents
+
+![](https://i.imgur.com/NJQz3kt.png)
