@@ -1,2 +1,25 @@
 @import 'styles/slicedon';
 @import 'flavours/glitch/styles/index';
+
+// Make the horizontal and vertical padding in statuses consistent.
+.status, .detailed-status {
+  padding: 10px;
+}
+
+// Remove top padding in statuses.
+.status__content {
+  padding-top: 0 !important;
+}
+
+// De-emphasize the remaining character count.
+// (It still turns red when over the limit.)
+.composer--publisher > .count {
+  color: $darker-text-color;
+}
+
+// Hide the share button on large screens.
+@media (max-width: 1000px) {
+  button.status__action-bar-button.icon-button[title="Share"] {
+    display: none;
+  }
+}
