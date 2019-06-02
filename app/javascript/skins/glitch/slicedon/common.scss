@@ -13,6 +13,18 @@
   }
 }
 
+// Make the padding in account bios consistent.
+.account__header {
+  .account__header__bio .account__header__content {
+    padding: 15px;
+    padding-bottom: 15px;
+  }
+
+  .account__header__bar {
+    padding-bottom: 0;
+  }
+}
+
 // Remove top padding in statuses.
 .status__content {
   padding-top: 0 !important;
