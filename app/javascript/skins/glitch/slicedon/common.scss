@@ -18,7 +18,7 @@
 }
 
 // Hide the share button on large screens.
-@media (max-width: 1000px) {
+@media (min-width: 1000px) {
   button.status__action-bar-button.icon-button[title="Share"] {
     display: none;
   }
