@@ -6,6 +6,13 @@
   padding: 10px;
 }
 
+.public-layout {
+  // Make the top margin be as tall as the margin above the post.
+  .detailed-status__meta {
+    margin-top: 15px;
+  }
+}
+
 // Remove top padding in statuses.
 .status__content {
   padding-top: 0 !important;
